@@ -166,15 +166,15 @@ function extraCodeFromAst(v:Token[],i:number,infos:any[]){
   return text
 }
 
-function getRangeTokens(i:number,vs:Token[]){
+function getRangeTokens(i:number,vs:Token[],start:string,end:string){
   let initialIndex = i
   const range = []
   for(i;i<vs.length;i++){
     const v = vs[i].value
-    if(v === '{'){
-      range.push('{')
+    if(v === start){
+      range.push(start)
     }
-    if(v === '}'){
+    if(v === end){
       range.shift()
     }
     if(range.length === 0){
@@ -198,15 +198,26 @@ function parseCode(code:string,conf?:{
   const tokenGroups:Token[][] = []
   runArr<Token>(tokens,(v,i)=>{
     if(v.type === 'Keyword'){
+      if(v.value === "function"){
+        const g = tokenGroups[tokenGroups.length-1] || []
+        const l = g[g.length-1]
+        if(l && l.value === '='){
+          const {da,index:index} = getRangeTokens(i+1,tokens,'(',')')
+          const {da:da2,index:index2} = getRangeTokens(index+1,tokens,'{','}')
+          g.push(...da,...da2)
+          return index2
+        }
+      }
       tokenGroups.push([v])
       return 'continue'
     }
     const lastGroups = tokenGroups[tokenGroups.length-1]
     if(v.value === '{'){
-      const {da,index} = getRangeTokens(i,tokens)
+      const {da,index} = getRangeTokens(i,tokens,'{','}')
       lastGroups.push(...da)
       return index
     }
+
     lastGroups.push(v)
   })
   runArr<Token[]>(tokenGroups,(v,i)=>{

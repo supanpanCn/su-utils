@@ -96,11 +96,13 @@ function pushRange(target:any[],origin:any[],start:number,range:[string,string],
   return index
 }
 
+let step = 0
 function parseCode(code:string,conf?:{
   visitor:(c:string,s:number,type:string)=>void
 }){
   s = -1
   const {code:scriptCode,s:startIndex} = extraScriptBody(code)
+  step = startIndex > -1 ? startIndex :0
   code = scriptCode
   const ast = parse(code)
   let {tokens=[]} = ast
@@ -124,15 +126,25 @@ function parseCode(code:string,conf?:{
 
     lastGroups.push(v)
   })
-
-  runArr<Token[]>(tokenGroups.filter(v=>!!v.length),(v,i)=>{
+  const arr = tokenGroups.filter((v) => !!v.length)
+  runArr<Token[]>(arr,(v,i)=>{
     const astCode = extraCodeFromAst(v,i,ast.loc?.lines?.infos)
+    if(i>0){
+      const pre = arr[i-1]
+      const l = pre[pre.length - 1]
+      const c = v[0]
+      const miss = c.loc?.start?.line - l.loc?.end?.line - 1
+      if(miss > 0){
+        step += miss
+      }
+    }
     if(getType(conf) === 'O'){
       const { visitor } = conf!
       if(getType(visitor) === 'F'){
-        visitor(astCode,startIndex,v[0].value)
+        visitor(astCode,step,v[0].value)
       }
     }
+    step += astCode.length
   })
 }
 

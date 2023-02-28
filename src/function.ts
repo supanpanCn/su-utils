@@ -1,20 +1,12 @@
 import stripComments from "displace-comments";
 import colors from "picocolors";
-import { parse } from 'recast'
+import parseCode from './parse'
 import { resolveModule } from "local-pkg";
-import { regex , FILL } from './const'
 import type { AnyObj , OneOfKey } from "./type";
 
 type Types = "S" | "O" | "U" | "F" | "N" | "B" | "R" | "A";
 type MessageType = "red" | "yellow" | "green";
-interface Token{
-  type:string;
-  value:string;
-  loc:{
-    start:any;
-    end:any;
-  }
-}
+
 
 function runArr<T>(
   m: any,
@@ -125,111 +117,7 @@ function replaceAll(code: string, o: string, cb?:(o:string)=>string) {
   return code;
 }
 
-let s = -1
-function extraScriptBody(code:string){
-  code = stripComments(code)
-  let scriptCode = ''
-  if(regex.scriptBodyRE.test(code)){
-    doRegex(regex.quoteBodyOfEqRE,code,(m)=>code = replaceAll(code,m[2],(o)=>FILL.repeat(o.length)))
-    doRegex(regex.scriptBodyRE,code,(m)=>{
-      if(m && m[2]){
-        scriptCode += m[2]
-        if(s === -1){
-          s = m.index + m[1].length
-        }
-      }
-    })
-  }
-  code = scriptCode ? scriptCode : code
-  return {code,s:s===-1?0:s}
-}
 
-function extraCodeFromAst(v:Token[],i:number,infos:any[]){
-  let text = ''
-  if(getType(infos) === 'A' && getType(v) === 'A'){
-    function _append(line:string){
-      text += line
-      text += '\n'
-    }
-    const first = v[0]
-    const last = v[v.length-1]
-    const s = first.loc.start.line - 1
-    const e = last.loc.end.line
-    if(i===0 && s!==0){
-      const range = infos.slice(0,i+1)
-      runArr(range,(v:any)=>_append(v.line))
-    }
-    const range = infos.slice(s,e)
-    runArr(range,(v:any)=>_append(v.line))
-  }
-  
-  return text
-}
-
-function getRangeTokens(i:number,vs:Token[],start:string,end:string){
-  let initialIndex = i
-  const range = []
-  for(i;i<vs.length;i++){
-    const v = vs[i].value
-    if(v === start){
-      range.push(start)
-    }
-    if(v === end){
-      range.shift()
-    }
-    if(range.length === 0){
-      break
-    }
-  }
-  return {
-    da:vs.slice(initialIndex,i+1),
-    index:i
-  }
-}
-
-function parseCode(code:string,conf?:{
-  visitor:(c:string,s:number,type:string)=>void
-}){
-  s = -1
-  const {code:scriptCode,s:startIndex} = extraScriptBody(code)
-  code = scriptCode
-  const ast = parse(code)
-  let {tokens=[]} = ast
-  const tokenGroups:Token[][] = []
-  runArr<Token>(tokens,(v,i)=>{
-    if(v.type === 'Keyword'){
-      if(v.value === "function"){
-        const g = tokenGroups[tokenGroups.length-1] || []
-        const l = g[g.length-1]
-        if(l && l.value === '='){
-          const {da,index:index} = getRangeTokens(i+1,tokens,'(',')')
-          const {da:da2,index:index2} = getRangeTokens(index+1,tokens,'{','}')
-          g.push(...da,...da2)
-          return index2
-        }
-      }
-      tokenGroups.push([v])
-      return 'continue'
-    }
-    const lastGroups = tokenGroups[tokenGroups.length-1]
-    if(v.value === '{'){
-      const {da,index} = getRangeTokens(i,tokens,'{','}')
-      lastGroups.push(...da)
-      return index
-    }
-
-    lastGroups.push(v)
-  })
-  runArr<Token[]>(tokenGroups,(v,i)=>{
-    const astCode = extraCodeFromAst(v,i,ast.loc?.lines?.infos)
-    if(getType(conf) === 'O'){
-      const { visitor } = conf!
-      if(getType(visitor) === 'F'){
-        visitor(astCode,startIndex,v[0].value)
-      }
-    }
-  })
-}
 
 function doRegex(reg: RegExp, code: string, cb: (m: RegExpExecArray,reg:RegExp) => void,startIndex?:number) {
   code = stripComments(code);

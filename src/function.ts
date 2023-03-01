@@ -9,14 +9,15 @@ type MessageType = "red" | "yellow" | "green";
 type DfsItem = {
   children:any[]
 }
+type RunArrCb<T> = (
+  m: T,
+  i: number,
+  isLast: boolean
+) => "break" | "continue" | number | void | undefined
 
 function runArr<T>(
   m: any,
-  cb: (
-    m: T,
-    i: number,
-    isLast: boolean
-  ) => "break" | "continue" | number | void | undefined
+  cb: RunArrCb<T>
 ): undefined | "break" | "continue" {
   let res = undefined;
   if (Array.isArray(m)) {
@@ -197,8 +198,8 @@ function createCleanObj<T extends AnyObj>(
   return obj;
 }
 
-function dfsTree(tree:AtLastInObjectArray<{}[],DfsItem>,cb:Function,payload:any){
-  runArr<DfsItem>(tree,(v,i,isLast)=>{
+function dfsTree<T>(tree:AtLastInObjectArray<{}[],DfsItem>,cb:RunArrCb<T>,payload:any){
+  runArr<DfsItem & T>(tree,(v,i,isLast)=>{
     if(getType(cb) === 'F'){
       const t = cb(v,i,isLast)
       if(t === 'continue' || t === 'break' || typeof t === 'number'){

@@ -1,7 +1,7 @@
 import stripComments from "displace-comments";
 import { parse } from 'recast'
-import { regex , FILL } from './const'
-import { doRegex , replaceAll , getType , runArr } from './function'
+import { regex } from './const'
+import { doRegex , getType , runArr } from './function'
 
 interface Token{
   type:string;
@@ -29,7 +29,8 @@ function extraScriptBody(code:string){
   code = stripComments(code)
   let scriptCode = ''
   if(regex.scriptBodyRE.test(code)){
-    doRegex(regex.quoteBodyOfEqRE,code,(m)=>code = replaceAll(code,m[2],(o)=>FILL.repeat(o.length)))
+    // inner '<script src=""></script>'
+    // doRegex(regex.quoteBodyOfEqRE,code,(m)=>code = replaceAll(code,m[2],(o)=>FILL.repeat(o.length)))
     doRegex(regex.scriptBodyRE,code,(m)=>{
       if(m && m[2]){
         scriptCode += m[2]

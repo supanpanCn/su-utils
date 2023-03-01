@@ -198,9 +198,9 @@ function createCleanObj<T extends AnyObj>(
 }
 
 function dfsTree(tree:AtLastInObjectArray<{}[],DfsItem>,cb:Function,payload:any){
-  runArr<DfsItem>(tree,(v)=>{
+  runArr<DfsItem>(tree,(v,i,isLast)=>{
     if(getType(cb) === 'F'){
-      const t = cb(payload)
+      const t = cb(v,i,isLast)
       if(t === 'continue' || t === 'break' || typeof t === 'number'){
         return t
       }

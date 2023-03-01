@@ -2,11 +2,13 @@ import stripComments from "displace-comments";
 import colors from "picocolors";
 import parseCode from './parse'
 import { resolveModule } from "local-pkg";
-import type { AnyObj , OneOfKey } from "./type";
+import type { AnyObj , OneOfKey , AtLastInObjectArray } from "./type";
 
 type Types = "S" | "O" | "U" | "F" | "N" | "B" | "R" | "A";
 type MessageType = "red" | "yellow" | "green";
-
+type DfsItem = {
+  children:any[]
+}
 
 function runArr<T>(
   m: any,
@@ -195,6 +197,20 @@ function createCleanObj<T extends AnyObj>(
   return obj;
 }
 
+function dfsTree(tree:AtLastInObjectArray<{}[],DfsItem>,cb:Function,payload:any){
+  runArr<DfsItem>(tree,(v)=>{
+    if(getType(cb) === 'F'){
+      const t = cb(payload)
+      if(t === 'continue' || t === 'break' || typeof t === 'number'){
+        return t
+      }
+    }
+    if(Array.isArray(v.children)){
+      dfsTree(v.children,cb,payload)
+    }
+  })
+}
+
 function createLog<T>(messages: Map<string, string | Function>,which:string) {
   return function(
     messageType: OneOfKey<T>,
@@ -219,5 +235,6 @@ export {
   getType,
   _dirname,
   checkIsClosed,
-  parseCode
+  parseCode,
+  dfsTree
 };

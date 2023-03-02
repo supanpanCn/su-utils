@@ -164,6 +164,16 @@ function getType(p: any): Types {
   return "U";
 }
 
+function waitFor(delay:number=200){
+  let timer:any
+  return new Promise(resolve=>{
+    timer = setTimeout(()=>{
+      resolve(true)
+      clearTimeout(timer)
+    },delay)
+  })
+}
+
 function createCleanObj<T extends AnyObj>(
   obj: T,
   conf?: {
@@ -237,5 +247,6 @@ export {
   _dirname,
   checkIsClosed,
   parseCode,
-  dfsTree
+  dfsTree,
+  waitFor
 };

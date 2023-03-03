@@ -41,6 +41,11 @@ function runArr<T>(
   return res;
 }
 
+function getLastItemOfArray(arr:any[]){
+  const res =  arr[arr.length-1]
+  return res
+}
+
 function checkIsClosed(value:string,flags:[string,string]){
   const [flag1,flag2] = flags
   let i = value.indexOf(flag1)
@@ -248,5 +253,6 @@ export {
   checkIsClosed,
   parseCode,
   dfsTree,
-  waitFor
+  waitFor,
+  getLastItemOfArray
 };

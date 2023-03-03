@@ -1,7 +1,7 @@
 import stripComments from "displace-comments";
 import { parse } from 'recast'
 import { regex } from './const'
-import { doRegex , getType , runArr } from './function'
+import { doRegex , getType , runArr , getLastItemOfArray } from './function'
 
 interface Token{
   type:string;
@@ -18,11 +18,6 @@ const punctuatorMap = new Map<Key,[string,string]>([
   ['{',['{','}']],
   ['(',['(',')']]
 ])
-
-function getLastArray(arr:any[]){
-  const res =  arr[arr.length-1]
-  return res
-}
 
 let s = -1
 function extraScriptBody(code:string){
@@ -52,7 +47,7 @@ function extraCodeFromAst(v:Token[],i:number,infos:any[]){
       text += '\n'
     }
     const first = v[0]
-    const last = getLastArray(v)
+    const last = getLastItemOfArray(v)
     const s = first.loc.start.line - 1
     const e = last.loc.end.line
     if(i===0 && s!==0){
@@ -110,8 +105,8 @@ function parseCode(code:string,conf?:{
   runArr<Token>(tokens,(v,i)=>{
     if(v.type === 'Keyword'){
       if(v.value === "function"){
-        const g = getLastArray(tokenGroups) || []
-        const l = getLastArray(g)
+        const g = getLastItemOfArray(tokenGroups) || []
+        const l = getLastItemOfArray(g)
         if(l && l.value === '='){
           return pushRange(g,tokens,pushRange(g,tokens,i+1,['(',')'])+1,['{','}'],tokenGroups)
         }
@@ -119,7 +114,7 @@ function parseCode(code:string,conf?:{
       tokenGroups.push([v])
       return 'continue'
     }
-    const lastGroups = getLastArray(tokenGroups) || []
+    const lastGroups = getLastItemOfArray(tokenGroups) || []
     if(v.value === '{' || v.value === '('){
       return pushRange(lastGroups,tokens,i,punctuatorMap.get(v.value as Key)!,tokenGroups)
     }

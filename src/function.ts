@@ -1,6 +1,7 @@
 import stripComments from "displace-comments";
 import colors from "picocolors";
 import parseCode from './parse'
+import diffArr from './diffArr'
 import { resolveModule } from "local-pkg";
 import type { AnyObj , OneOfKey , AtLastInObjectArray } from "./type";
 
@@ -254,5 +255,6 @@ export {
   parseCode,
   dfsTree,
   waitFor,
+  diffArr,
   getLastItemOfArray
 };

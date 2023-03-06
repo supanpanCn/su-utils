@@ -171,21 +171,30 @@ function getType(p: any): Types {
   return "U";
 }
 
-function waitFor(getHandler:(hanlers:[(value: unknown) => void,(reason?: any) => void])=>void):Promise<void>;
-function waitFor(getHandler:(hanlers:[(value: unknown) => void,(reason?: any) => void])=>void,conf?:{
-  delay?: number ;
-  isAuto?:boolean 
-}) {
-  const {delay=100,isAuto=false} = conf || {}
+function waitFor(
+  getHandler: (
+    hanlers: [(value: unknown) => void, (reason?: any) => void]
+  ) => void
+): Promise<void>;
+function waitFor(
+  getHandler: (
+    hanlers: [(value: unknown) => void, (reason?: any) => void]
+  ) => void,
+  conf?: {
+    delay?: number;
+    isAuto?: boolean;
+  }
+) {
+  const { delay = 100, isAuto = false } = conf || {};
   let timer: any;
-  return new Promise((resolve,reject) => {
-    if(isAuto){
+  return new Promise((resolve, reject) => {
+    if (isAuto) {
       timer = setTimeout(() => {
         resolve(true);
         clearTimeout(timer);
       }, delay);
-    }else{
-      getHandler([resolve,reject])
+    } else {
+      getHandler([resolve, reject]);
     }
   });
 }
@@ -224,7 +233,7 @@ function createCleanObj<T extends AnyObj>(
   return obj;
 }
 
-let parentNode:any=null
+let parentNode: any = null;
 function dfsTree<T>(
   tree: AtLastInObjectArray<{}[], DfsItem>,
   cb: RunArrCb<T>,
@@ -232,7 +241,7 @@ function dfsTree<T>(
 ) {
   runArr<DfsItem & T>(tree, (v, i, isLast) => {
     if (getType(cb) === "F") {
-      const t = cb(v, i, isLast,parentNode);
+      const t = cb(v, i, isLast, parentNode);
       if (t === "continue" || t === "break" || typeof t === "number") {
         return t;
       }
@@ -241,7 +250,7 @@ function dfsTree<T>(
       parentNode = v;
       dfsTree(v.children, cb, payload);
     }
-    if(isLast) parentNode = null
+    if (isLast) parentNode = null;
   });
 }
 
@@ -259,6 +268,18 @@ function createLog<T>(messages: Map<string, string | Function>, which: string) {
   };
 }
 
+let timer: any = null;
+function debounce(params: any, cb: any, t?: number) {
+  if (timer) clearInterval(timer);
+  timer = setTimeout(() => {
+    if (getType(cb) === "F") {
+      cb(params);
+    }
+    clearTimeout(timer);
+    timer = null;
+  }, t || 200);
+}
+
 export {
   extractBlockCode,
   replaceAll,
@@ -274,4 +295,5 @@ export {
   waitFor,
   diffArr,
   getLastItemOfArray,
+  debounce,
 };

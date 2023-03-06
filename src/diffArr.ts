@@ -48,16 +48,16 @@ function diffArr<T>(x: T[], y: T[], k?: string): DiffResult<T> {
   // the two "while" only execute one or the other at a time
   if (i > l2) {
     while (i <= l1) {
-      list1.splice(i, 1);
       response.deletes.push(list1[i]);
+      list1.splice(i, 1);
       i++;
     }
     return response;
   }
   if (i > l1) {
     while (i <= l2) {
-      list1.push(list2[i]);
       response.adds.push(list2[i]);
+      list1.push(list2[i]);
       i++;
     }
     return response;

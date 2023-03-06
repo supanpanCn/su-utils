@@ -1,25 +1,23 @@
 import stripComments from "displace-comments";
 import colors from "picocolors";
-import parseCode from './parse'
-import diffArr from './diffArr'
+import parseCode from "./parse";
+import diffArr from "./diffArr";
 import { resolveModule } from "local-pkg";
-import type { AnyObj , OneOfKey , AtLastInObjectArray } from "./type";
+import type { AnyObj, OneOfKey, AtLastInObjectArray } from "./type";
 
 type Types = "S" | "O" | "U" | "F" | "N" | "B" | "R" | "A";
 type MessageType = "red" | "yellow" | "green";
 type DfsItem = {
-  children:any[]
-}
+  children: any[];
+};
 type RunArrCb<T> = (
   m: T,
   i: number,
-  isLast: boolean
-) => "break" | "continue" | number | void | undefined
+  isLast: boolean,
+  parent?: any
+) => "break" | "continue" | number | void | undefined;
 
-function runArr<T>(
-  m: any,
-  cb: RunArrCb<T>
-): undefined | "break" | "continue" {
+function runArr<T>(m: any, cb: RunArrCb<T>): undefined | "break" | "continue" {
   let res = undefined;
   if (Array.isArray(m)) {
     for (let i = 0; i < m.length; i++) {
@@ -33,8 +31,8 @@ function runArr<T>(
           res = fb;
           continue;
         }
-        if(getType(fb) === 'N'){
-          i = fb as number
+        if (getType(fb) === "N") {
+          i = fb as number;
         }
       }
     }
@@ -42,29 +40,29 @@ function runArr<T>(
   return res;
 }
 
-function getLastItemOfArray(arr:any[]){
-  const res =  arr[arr.length-1]
-  return res
+function getLastItemOfArray(arr: any[]) {
+  const res = arr[arr.length - 1];
+  return res;
 }
 
-function checkIsClosed(value:string,flags:[string,string]){
-  const [flag1,flag2] = flags
-  let i = value.indexOf(flag1)
-  let l = 0
-  while(i>-1){
-    l++
-    i = value.indexOf(flag1,i+1)
+function checkIsClosed(value: string, flags: [string, string]) {
+  const [flag1, flag2] = flags;
+  let i = value.indexOf(flag1);
+  let l = 0;
+  while (i > -1) {
+    l++;
+    i = value.indexOf(flag1, i + 1);
   }
-  i = value.lastIndexOf(flag2)
-  let r = 0
-  while(i>-1){
-    r++
-    i = value.lastIndexOf(flag2,i-1)
+  i = value.lastIndexOf(flag2);
+  let r = 0;
+  while (i > -1) {
+    r++;
+    i = value.lastIndexOf(flag2, i - 1);
   }
   return {
-    isClosed:l === r,
-    miss:Math.abs(r-l)
-  }
+    isClosed: l === r,
+    miss: Math.abs(r - l),
+  };
 }
 
 function extractBlockCode(params: {
@@ -76,29 +74,29 @@ function extractBlockCode(params: {
 }) {
   const { code, start, end, initialIndex = 0, dir = "r" } = params;
   const range = [start];
-  let i = initialIndex
-  let isBreak = false
-  if(start === code[initialIndex]){
-    i++
-    isBreak = true
+  let i = initialIndex;
+  let isBreak = false;
+  if (start === code[initialIndex]) {
+    i++;
+    isBreak = true;
   }
-  
+
   const cb = (v: string) => {
     if (v === start) {
-      if(!isBreak){
-        isBreak = true
-        return
+      if (!isBreak) {
+        isBreak = true;
+        return;
       }
       range.push(v);
     }
     if (v === end) {
       range.shift();
     }
-    if (range.length === 0 ) {
+    if (range.length === 0) {
       return {
         start: initialIndex,
-        end: i ,
-        text:code.substring(initialIndex,i+1)
+        end: i,
+        text: code.substring(initialIndex, i + 1),
       };
     }
   };
@@ -119,28 +117,31 @@ function extractBlockCode(params: {
   }
 }
 
-function replaceAll(code: string, o: string, cb?:(o:string)=>string) {
+function replaceAll(code: string, o: string, cb?: (o: string) => string) {
   while (code.includes(o)) {
-    code = code.replace(o, getType(cb) === 'F' ? cb!(o) : "");
+    code = code.replace(o, getType(cb) === "F" ? cb!(o) : "");
   }
   return code;
 }
 
-
-
-function doRegex(reg: RegExp, code: string, cb: (m: RegExpExecArray,reg:RegExp) => void,startIndex?:number) {
+function doRegex(
+  reg: RegExp,
+  code: string,
+  cb: (m: RegExpExecArray, reg: RegExp) => void,
+  startIndex?: number
+) {
   code = stripComments(code);
-  reg.lastIndex = startIndex ? startIndex : 0
+  reg.lastIndex = startIndex ? startIndex : 0;
   let m = reg.exec(code);
   while (m) {
     if (typeof cb === "function" && m) {
-      cb(m as RegExpExecArray,reg);
+      cb(m as RegExpExecArray, reg);
     }
     m = reg.exec(code);
   }
 }
 
-function _dirname(pkgName:string) {
+function _dirname(pkgName: string) {
   const entry = resolveModule(pkgName, {
     paths: [process.cwd()],
   });
@@ -170,14 +171,23 @@ function getType(p: any): Types {
   return "U";
 }
 
-function waitFor(delay:number=200){
-  let timer:any
-  return new Promise(resolve=>{
-    timer = setTimeout(()=>{
-      resolve(true)
-      clearTimeout(timer)
-    },delay)
-  })
+function waitFor(getHandler:(hanlers:[(value: unknown) => void,(reason?: any) => void])=>void):Promise<void>;
+function waitFor(getHandler:(hanlers:[(value: unknown) => void,(reason?: any) => void])=>void,conf?:{
+  delay?: number ;
+  isAuto?:boolean 
+}) {
+  const {delay=100,isAuto=false} = conf || {}
+  let timer: any;
+  return new Promise((resolve,reject) => {
+    if(isAuto){
+      timer = setTimeout(() => {
+        resolve(true);
+        clearTimeout(timer);
+      }, delay);
+    }else{
+      getHandler([resolve,reject])
+    }
+  });
 }
 
 function createCleanObj<T extends AnyObj>(
@@ -214,22 +224,29 @@ function createCleanObj<T extends AnyObj>(
   return obj;
 }
 
-function dfsTree<T>(tree:AtLastInObjectArray<{}[],DfsItem>,cb:RunArrCb<T>,payload:any){
-  runArr<DfsItem & T>(tree,(v,i,isLast)=>{
-    if(getType(cb) === 'F'){
-      const t = cb(v,i,isLast)
-      if(t === 'continue' || t === 'break' || typeof t === 'number'){
-        return t
+function dfsTree<T>(
+  tree: AtLastInObjectArray<{}[], DfsItem>,
+  cb: RunArrCb<T>,
+  payload: any
+) {
+  let parent:any = null;
+  runArr<DfsItem & T>(tree, (v, i, isLast) => {
+    if (getType(cb) === "F") {
+      const t = cb(v, i, isLast,parent);
+      if (t === "continue" || t === "break" || typeof t === "number") {
+        return t;
       }
     }
-    if(Array.isArray(v.children)){
-      dfsTree(v.children,cb,payload)
+    if (Array.isArray(v.children)) {
+      parent = v;
+      dfsTree(v.children, cb, payload);
     }
-  })
+    if(isLast) parent = null
+  });
 }
 
-function createLog<T>(messages: Map<string, string | Function>,which:string) {
-  return function(
+function createLog<T>(messages: Map<string, string | Function>, which: string) {
+  return function (
     messageType: OneOfKey<T>,
     color: MessageType = "red",
     rest?: any
@@ -256,5 +273,5 @@ export {
   dfsTree,
   waitFor,
   diffArr,
-  getLastItemOfArray
+  getLastItemOfArray,
 };

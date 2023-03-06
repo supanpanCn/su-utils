@@ -224,24 +224,24 @@ function createCleanObj<T extends AnyObj>(
   return obj;
 }
 
+let parentNode:any=null
 function dfsTree<T>(
   tree: AtLastInObjectArray<{}[], DfsItem>,
   cb: RunArrCb<T>,
   payload: any
 ) {
-  let parent:any = null;
   runArr<DfsItem & T>(tree, (v, i, isLast) => {
     if (getType(cb) === "F") {
-      const t = cb(v, i, isLast,parent);
+      const t = cb(v, i, isLast,parentNode);
       if (t === "continue" || t === "break" || typeof t === "number") {
         return t;
       }
     }
     if (Array.isArray(v.children)) {
-      parent = v;
+      parentNode = v;
       dfsTree(v.children, cb, payload);
     }
-    if(isLast) parent = null
+    if(isLast) parentNode = null
   });
 }
 

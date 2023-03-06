@@ -269,7 +269,7 @@ function createLog<T>(messages: Map<string, string | Function>, which: string) {
 }
 
 let timer: any = null;
-function debounce(params: any, cb: any, t?: number) {
+function debounce(cb: Function, t?: number,params?: any) {
   if (timer) clearInterval(timer);
   timer = setTimeout(() => {
     if (getType(cb) === "F") {

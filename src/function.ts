@@ -1,9 +1,10 @@
+import type { AnyObj, OneOfKey, AtLastInObjectArray } from "./type";
 import stripComments from "displace-comments";
 import colors from "picocolors";
 import parseCode from "./parse";
 import diffArr from "./diffArr";
+import unasynchrony from './sync'
 import { resolveModule } from "local-pkg";
-import type { AnyObj, OneOfKey, AtLastInObjectArray } from "./type";
 
 type Types = "S" | "O" | "U" | "F" | "N" | "B" | "R" | "A";
 type MessageType = "red" | "yellow" | "green";
@@ -38,6 +39,13 @@ function runArr<T>(m: any, cb: RunArrCb<T>): undefined | "break" | "continue" {
     }
   }
   return res;
+}
+
+function createCustomType(type:string){
+  class Custom{}
+  const t = Custom as any
+  t[Symbol.toStringTag] = type
+  return t
 }
 
 function getLastItemOfArray(arr: any[]) {
@@ -289,6 +297,7 @@ export {
   runArr,
   getType,
   _dirname,
+  unasynchrony,
   checkIsClosed,
   parseCode,
   dfsTree,
@@ -296,4 +305,5 @@ export {
   diffArr,
   getLastItemOfArray,
   debounce,
+  createCustomType
 };

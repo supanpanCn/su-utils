@@ -1,6 +1,6 @@
 {
   "name": "su-helpers",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -18,10 +18,10 @@
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"
     },
-    "./client":{
-      "types": "./dist/client.d.ts",
-      "require": "./dist/client.js",
-      "import": "./dist/client.mjs"
+    "./node":{
+      "types": "./dist/node.d.ts",
+      "require": "./dist/node.js",
+      "import": "./dist/node.mjs"
     }
   },
   "repository": {

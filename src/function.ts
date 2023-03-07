@@ -1,10 +1,8 @@
 import type { AnyObj, OneOfKey, AtLastInObjectArray } from "./type";
 import stripComments from "displace-comments";
 import colors from "picocolors";
-import parseCode from "./parse";
 import diffArr from "./diffArr";
 import unasynchrony from './sync'
-import { resolveModule } from "local-pkg";
 
 type Types = "S" | "O" | "U" | "F" | "N" | "B" | "R" | "A";
 type MessageType = "red" | "yellow" | "green";
@@ -149,15 +147,6 @@ function doRegex(
   }
 }
 
-function _dirname(pkgName: string) {
-  const entry = resolveModule(pkgName, {
-    paths: [process.cwd()],
-  });
-  if (entry) {
-    return entry;
-  }
-}
-
 function getType(p: any): Types {
   const type = Object.prototype.toString.call(p);
   switch (type) {
@@ -296,9 +285,7 @@ export {
   createCleanObj,
   runArr,
   getType,
-  _dirname,
   checkIsClosed,
-  parseCode,
   dfsTree,
   waitFor,
   diffArr,

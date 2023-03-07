@@ -297,7 +297,6 @@ export {
   runArr,
   getType,
   _dirname,
-  unasynchrony,
   checkIsClosed,
   parseCode,
   dfsTree,
@@ -305,5 +304,6 @@ export {
   diffArr,
   getLastItemOfArray,
   debounce,
-  createCustomType
+  createCustomType,
+  unasynchrony
 };

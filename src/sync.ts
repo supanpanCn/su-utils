@@ -1,4 +1,4 @@
-import { createCustomType , getType  } from './function'
+import { createCustomType   } from './function'
 const result = {
   status:'pending',
   data:null,
@@ -10,7 +10,7 @@ let handling = false
 function unasynchrony(tar:Promise<void>,userHandler?:Function){
   if(handling) return
   if(tar instanceof Promise){
-    const cb = getType(userHandler) === 'F' ? userHandler : (da:any)=>da
+    const cb = typeof userHandler === 'function' ? userHandler : (da:any)=>da
     handling = true
     const t = tar as any
     const origin = t.then 

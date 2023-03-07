@@ -1,13 +1,20 @@
 {
   "name": "su-helpers",
-  "version": "0.0.24",
+  "version": "0.0.25",
   "description": "",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "preinstall": "npx npm-only-allow@latest --PM yarn --lang zh",
     "dev": "tsup src/*.ts --format cjs,esm --dts --splitting --clean --watch src"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*"
+      ]
+    }
   },
   "files": [
     "dist"

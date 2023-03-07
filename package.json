@@ -1,14 +1,14 @@
 {
   "name": "su-helpers",
-  "version": "0.0.27",
+  "version": "0.0.31",
   "description": "",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "scripts": {
     "preinstall": "npx npm-only-allow@latest --PM yarn --lang zh",
     "dev": "tsup src/*.ts --format cjs,esm --dts --splitting --clean --watch src"
   },
+  "files": [
+    "dist"
+  ],
   "typesVersions": {
     "*": {
       "*": [
@@ -16,11 +16,8 @@
       ]
     }
   },
-  "files": [
-    "dist"
-  ],
   "exports":{
-    "./index":{
+    ".":{
       "types": "./dist/index.d.ts",
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"

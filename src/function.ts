@@ -1,5 +1,5 @@
 import type { AnyObj, OneOfKey, AtLastInObjectArray } from "./type";
-import stripComments from "displace-comments";
+import { displaceComments } from "displace-comments";
 import colors from "picocolors";
 import diffArr from "./diffArr";
 import unasynchrony from './sync'
@@ -150,7 +150,7 @@ function doRegex(
   cb: (m: RegExpExecArray, reg: RegExp) => void,
   startIndex?: number
 ) {
-  code = stripComments(code);
+  code = displaceComments(code);
   reg.lastIndex = startIndex ? startIndex : 0;
   let m = reg.exec(code);
   while (m) {

@@ -124,9 +124,23 @@ function extractBlockCode(params: {
 }
 
 function replaceAll(code: string, o: string, cb?: (o: string) => string) {
-  while (code.includes(o)) {
-    code = code.replace(o, getType(cb) === "F" ? cb!(o) : "");
+  const reg = new RegExp(o)
+  const m = reg.exec(code)
+  if(m){
+    const start = m.index
+    const end = start + m[0].length
+    const mid = code.substring(start,end)
+    let newCode = ''
+    const list = code.split(mid)
+    list.forEach((v,i)=>{
+      newCode += v 
+      if(i<list.length-1){
+        newCode += getType(cb) === "F" ? cb!(m[0]) : "";
+      }
+    })
+    code = newCode
   }
+  
   return code;
 }
 

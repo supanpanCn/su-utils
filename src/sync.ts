@@ -6,17 +6,13 @@ const result = {
 }
 const TYPE_NAME = 'SU_UTILS_TYPE'
 const TYPE = createCustomType(TYPE_NAME)
-let handling = false
 function unasynchrony(tar:Promise<void>,userHandler?:Function){
-  if(handling) return
   if(tar instanceof Promise){
     const cb = typeof userHandler === 'function' ? userHandler : (da:any)=>da
-    handling = true
     const t = tar as any
     const origin = t.then 
     t.then = ()=>{
       if(result.status === 'fullfilled'){
-        handling = false
         return result.data
       }
       origin.then((data:any)=>{

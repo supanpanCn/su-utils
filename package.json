@@ -1,6 +1,6 @@
 {
   "name": "su-helpers",
-  "version": "0.0.32",
+  "version": "0.0.33",
   "description": "",
   "scripts": {
     "preinstall": "npx npm-only-allow@latest --PM yarn --lang zh",
@@ -16,13 +16,13 @@
       ]
     }
   },
-  "exports":{
-    ".":{
+  "exports": {
+    ".": {
       "types": "./dist/index.d.ts",
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"
     },
-    "./node":{
+    "./node": {
       "types": "./dist/node.d.ts",
       "require": "./dist/node.js",
       "import": "./dist/node.mjs"
@@ -45,7 +45,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "displace-comments": "^1.0.0",
+    "displace-comments": "1.0.1",
     "local-pkg": "^0.4.3",
     "picocolors": "^1.0.0",
     "recast": "^0.22.0"

@@ -1,11 +1,8 @@
-import { createCustomType   } from './function'
 const result = {
   status:'pending',
   data:null,
   err:null
 }
-const TYPE_NAME = 'SU_UTILS_TYPE'
-const TYPE = createCustomType(TYPE_NAME)
 function unasynchrony(tar:Promise<void>,userHandler?:Function){
   if(tar instanceof Promise){
     const cb = typeof userHandler === 'function' ? userHandler : (da:any)=>da
@@ -15,21 +12,25 @@ function unasynchrony(tar:Promise<void>,userHandler?:Function){
       if(result.status === 'fullfilled'){
         return result.data
       }
-      origin.then((data:any)=>{
+      throw origin.then((data:any)=>{
         result.status = 'fullfilled'
         result.data = cb!(data)
       },(err:any)=>{
         result.err = err
       })
-      throw TYPE
     }
-    try {
-     return t.then()
-    } catch (error) {
-      if(Object.prototype.toString.call(error) === `[object ${TYPE_NAME}]`){
-        t.then()
-      }
+    function exec(){
+      try {
+        return t.then()
+       } catch (error) {
+         if(error instanceof Promise){
+           t.then(exec,exec)
+         }else{
+           throw error
+         }
+       }
     }
+    exec()
   }
 }
 

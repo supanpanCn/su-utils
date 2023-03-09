@@ -1,6 +1,11 @@
 import { createContext, runInContext } from "node:vm";
 import { getType } from './function'
 
+type Replace = ()=>{
+  match:string;
+  handler:()=>string
+}
+
 function replaceAll(code: string, o: string, cb?: (o: string) => string) {
   const reg = new RegExp(o)
   const m = reg.exec(code)
@@ -94,7 +99,7 @@ function checkIsClosed(value: string, flags: [string, string]) {
   };
 }
 
-function toObject(code: string) {
+function toObject(code: string,replaceContext?:Replace) {
   const vm = {
     block: {
       children: [],
@@ -102,8 +107,14 @@ function toObject(code: string) {
   };
   createContext(vm);
   let block = `block = ${code}`;
-  if (block.includes("RouterView")) {
-    block = replaceAll(block,'RouterView',()=>`"RouterView"`);
+  if(getType(replaceContext) === 'F'){
+    const {
+      match,
+      handler
+    } = replaceContext!()
+    if (block.includes(match)) {
+      block = replaceAll(block,match,handler);
+    }
   }
   runInContext(block, vm);
   return vm.block;

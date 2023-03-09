@@ -2,6 +2,7 @@ import type { AnyObj, OneOfKey, AtLastInObjectArray } from "./type";
 import colors from "picocolors";
 import diffArr from "./diffArr";
 import unasynchrony from './sync'
+import parseCode from './parse'
 import { displaceComments } from "displace-comments";
 import { replaceAll , extractBlockCode , checkIsClosed , toObject } from './string'
 
@@ -215,6 +216,7 @@ export {
   getLastItemOfArray,
   debounce,
   toObject,
+  parseCode,
   createCustomType,
   unasynchrony
 };

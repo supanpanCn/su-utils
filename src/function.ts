@@ -158,7 +158,7 @@ let parentNode: any = null;
 function dfsTree<T>(
   tree: AtLastInObjectArray<{}[], DfsItem>,
   cb: RunArrCb<T>,
-  payload: any
+  payload?: any
 ) {
   runArr<DfsItem & T>(tree, (v, i, isLast) => {
     if (getType(cb) === "F") {
@@ -167,7 +167,7 @@ function dfsTree<T>(
         return t;
       }
     }
-    if (Array.isArray(v.children)) {
+    if (Array.isArray(v.children) && v.children.length) {
       parentNode = v;
       dfsTree(v.children, cb, payload);
     }

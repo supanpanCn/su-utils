@@ -58,9 +58,10 @@ function doRegex(
   reg: RegExp,
   code: string,
   cb: (m: RegExpExecArray, reg: RegExp) => void,
-  startIndex?: number
+  startIndex?: number,
+  strip?:boolean
 ) {
-  code = displaceComments(code);
+  code = strip ? displaceComments(code) : code;
   reg.lastIndex = startIndex ? startIndex : 0;
   let m = reg.exec(code);
   while (m) {

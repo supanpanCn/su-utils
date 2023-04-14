@@ -1,10 +1,15 @@
 import type { AnyObj, OneOfKey, AtLastInObjectArray } from "./type";
 import colors from "picocolors";
 import diffArr from "./diffArr";
-import unasynchrony from './sync'
-import parseCode from './parse'
+import unasynchrony from "./sync";
+import parseCode from "./parse";
 import { displaceComments } from "displace-comments";
-import { replaceAll , extractBlockCode , checkIsClosed , toObject } from './string'
+import {
+  replaceAll,
+  extractBlockCode,
+  checkIsClosed,
+  toObject,
+} from "./string";
 
 type Types = "S" | "O" | "U" | "F" | "N" | "B" | "R" | "A";
 type MessageType = "red" | "yellow" | "green";
@@ -41,11 +46,11 @@ function runArr<T>(m: any, cb: RunArrCb<T>): undefined | "break" | "continue" {
   return res;
 }
 
-function createCustomType(type:string){
-  class Custom{}
-  const t = Custom as any
-  t[Symbol.toStringTag] = type
-  return t
+function createCustomType(type: string) {
+  class Custom {}
+  const t = Custom as any;
+  t[Symbol.toStringTag] = type;
+  return t;
 }
 
 function getLastItemOfArray(arr: any[]) {
@@ -53,13 +58,12 @@ function getLastItemOfArray(arr: any[]) {
   return res;
 }
 
-
 function doRegex(
   reg: RegExp,
   code: string,
   cb: (m: RegExpExecArray, reg: RegExp) => void,
   startIndex?: number,
-  strip?:boolean
+  strip?: boolean
 ) {
   code = strip ? displaceComments(code) : code;
   reg.lastIndex = startIndex ? startIndex : 0;
@@ -156,11 +160,19 @@ function createCleanObj<T extends AnyObj>(
 }
 
 let parentNode: any = null;
+let parentStack:any[] = [];
 function dfsTree<T>(
   tree: AtLastInObjectArray<{}[], DfsItem>,
   cb: RunArrCb<T>,
-  payload?: any
+  payload?: any,
+  isNotReset?:boolean
 ) {
+
+  if(!isNotReset){
+    parentNode = null
+    parentStack = []
+  }
+  
   runArr<DfsItem & T>(tree, (v, i, isLast) => {
     if (getType(cb) === "F") {
       const t = cb(v, i, isLast, parentNode);
@@ -170,9 +182,13 @@ function dfsTree<T>(
     }
     if (Array.isArray(v.children) && v.children.length) {
       parentNode = v;
-      dfsTree(v.children, cb, payload);
+      parentStack.push(v);
+      dfsTree(v.children, cb, payload,true);
     }
-    if (isLast) parentNode = null;
+    if (isLast) {
+      parentStack.pop();
+      parentNode = parentStack.pop();
+    }
   });
 }
 
@@ -191,7 +207,7 @@ function createLog<T>(messages: Map<string, string | Function>, which: string) {
 }
 
 let timer: any = null;
-function debounce(cb: Function, t?: number,params?: any) {
+function debounce(cb: Function, t?: number, params?: any) {
   if (timer) clearInterval(timer);
   timer = setTimeout(() => {
     if (getType(cb) === "F") {
@@ -219,5 +235,5 @@ export {
   toObject,
   parseCode,
   createCustomType,
-  unasynchrony
+  unasynchrony,
 };

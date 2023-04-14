@@ -3,6 +3,7 @@ import colors from "picocolors";
 import diffArr from "./diffArr";
 import unasynchrony from "./sync";
 import parseCode from "./parse";
+import prettier from "./prettier";
 import { displaceComments } from "displace-comments";
 import {
   replaceAll,
@@ -160,19 +161,18 @@ function createCleanObj<T extends AnyObj>(
 }
 
 let parentNode: any = null;
-let parentStack:any[] = [];
+let parentStack: any[] = [];
 function dfsTree<T>(
   tree: AtLastInObjectArray<{}[], DfsItem>,
   cb: RunArrCb<T>,
   payload?: any,
-  isNotReset?:boolean
+  isNotReset?: boolean
 ) {
-
-  if(!isNotReset){
-    parentNode = null
-    parentStack = []
+  if (!isNotReset) {
+    parentNode = null;
+    parentStack = [];
   }
-  
+
   runArr<DfsItem & T>(tree, (v, i, isLast) => {
     if (getType(cb) === "F") {
       const t = cb(v, i, isLast, parentNode);
@@ -183,7 +183,7 @@ function dfsTree<T>(
     if (Array.isArray(v.children) && v.children.length) {
       parentNode = v;
       parentStack.push(v);
-      dfsTree(v.children, cb, payload,true);
+      dfsTree(v.children, cb, payload, true);
     }
     if (isLast) {
       parentStack.pop();
@@ -236,4 +236,5 @@ export {
   parseCode,
   createCustomType,
   unasynchrony,
+  prettier,
 };

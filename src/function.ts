@@ -174,20 +174,21 @@ function dfsTree<T>(
   }
 
   runArr<DfsItem & T>(tree, (v, i, isLast) => {
+    const isDfs = Array.isArray(v.children) && v.children.length
     if (getType(cb) === "F") {
       const t = cb(v, i, isLast, parentNode);
       if (t === "continue" || t === "break" || typeof t === "number") {
         return t;
       }
     }
-    if (Array.isArray(v.children) && v.children.length) {
+    if (isDfs) {
       parentNode = v;
       parentStack.push(v);
       dfsTree(v.children, cb, payload, true);
     }
     if (isLast) {
       parentStack.pop();
-      parentNode = parentStack.pop();
+      parentNode = getLastItemOfArray(parentStack);
     }
   });
 }

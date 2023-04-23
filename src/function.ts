@@ -193,6 +193,8 @@ function dfsTree<T>(
   });
 }
 
+(dfsTree as any).getParentStack = () => parentStack
+
 function createLog<T>(messages: Map<string, string | Function>, which: string) {
   return function (
     messageType: OneOfKey<T>,

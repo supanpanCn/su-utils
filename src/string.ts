@@ -6,8 +6,8 @@ type Replace = ()=>{
   handler:()=>string
 }
 
-function replaceAll(code: string, o: string, cb?: (o: string) => string) {
-  const reg = new RegExp(o)
+function replaceAll(code: string, o: string | RegExp, cb?: (o: string) => string) {
+  const reg = typeof o === 'string' ? new RegExp(o) : o
   const m = reg.exec(code)
   if(m){
     const start = m.index

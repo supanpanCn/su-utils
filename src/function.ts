@@ -221,6 +221,12 @@ function debounce(cb: Function, t?: number, params?: any) {
   }, t || 200);
 }
 
+function parseTag (key: string, code: string) {
+  const reg = new RegExp(`\\<\\/?[\\s]*${key}[^\\>]*?\\>`, "g");
+  const m = code.match(reg);
+  return m;
+}
+
 export {
   extractBlockCode,
   replaceAll,
@@ -240,4 +246,5 @@ export {
   createCustomType,
   unasynchrony,
   prettier,
+  parseTag
 };

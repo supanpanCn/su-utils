@@ -284,10 +284,10 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
-displace-comments@1.0.4:
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/displace-comments/-/displace-comments-1.0.4.tgz#aa1c5f9b56672f356efd0c130239c35bcd5dcbc1"
-  integrity sha512-1Ii33kV3pohv2RSsK2JcBqGT8ITmgemtzAWM4n+LUFJbI3l7OjvjIicgJGn8McE+9UhvOSQYoy5sTNL6fx1icQ==
+displace-comments@^1.0.7:
+  version "1.0.8"
+  resolved "https://registry.npmjs.org/displace-comments/-/displace-comments-1.0.8.tgz#8a046eae385a6404e4f4bbc0842bd47b481f09f0"
+  integrity sha512-LBdKlSXSp0Ho81kurfp9eFiGT5jhEzz+9g+17ALst8Oa0/G0oICAUhQbzJCu3iWGv34AhOWh35YxLSzYEbwylw==
 
 es6-object-assign@^1.1.0:
   version "1.1.0"

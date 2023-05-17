@@ -4,7 +4,7 @@ import diffArr from "./diffArr";
 import unasynchrony from "./sync";
 import parseCode from "./parse";
 import prettier from "./prettier";
-import { displaceComments } from "displace-comments";
+import { displace } from "displace-comments";
 import {
   replaceAll,
   extractBlockCode,
@@ -66,7 +66,7 @@ function doRegex(
   startIndex?: number,
   strip?: boolean
 ) {
-  code = strip ? displaceComments(code) : code;
+  code = strip ? displace(code) : code;
   reg.lastIndex = startIndex ? startIndex : 0;
   let m = reg.exec(code);
   while (m) {

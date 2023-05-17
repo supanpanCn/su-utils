@@ -1,4 +1,4 @@
-import { displaceComments } from "displace-comments";
+import { displace } from "displace-comments";
 import { parse } from 'recast'
 import { regex } from './const'
 import { doRegex , getType , runArr , getLastItemOfArray } from './function'
@@ -21,7 +21,7 @@ const punctuatorMap = new Map<Key,[string,string]>([
 
 let s = -1
 function extraScriptBody(code:string){
-  code = displaceComments(code)
+  code = displace(code)
   let scriptCode = ''
   if(regex.scriptBodyRE.test(code)){
     // inner '<script src=""></script>'
